@@ -1,7 +1,8 @@
 import { buildGame } from './js/init';
-import { calculateFps } from './js/utils';
+import { calculateFps, shuffle } from './js/utils';
 import { inputs } from './js/keyEvent';
-import { Square } from './tetraminos/square';
+import { Tetra } from './tetraminos/Tetra';
+import { tetraShape } from './tetraminos/tetraShape';
 import { animateDeletedLine } from './js/animations';
 
 const SQUARE_STATES = ['empty', 'piece', 'freezePiece', 'delete'];
@@ -9,7 +10,6 @@ const GAME_SIZE = { x: 10, y: 18 };
 let currentFrame = 0;
 const speed = 40;
 const speedLimit = 5;
-const PIECES = [Square];
 let currentPiece = null;
 
 let game = buildGame(GAME_SIZE);
@@ -37,7 +37,8 @@ async function gameLoop(timeStamp) {
 }
 
 function addPiece() {
-  return new PIECES[0]();
+  const shapes = shuffle(tetraShape)
+  return new Tetra(shapes[0]);
 }
 
 function printGame(game) {
@@ -103,7 +104,7 @@ function freezePiece(game, piece) {
     if (y < 0) gameState = 'GAME_OVER';
     else game[y][x] = 2;
   }
-  piece.active = false;
+  piece.freeze();
   return gameState;
 }
 
