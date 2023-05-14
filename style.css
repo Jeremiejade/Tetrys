@@ -2,10 +2,27 @@
     --square-size: 20px;
 }
 
+@keyframes deleteLineAnimation {
+    0% {
+        opacity: 1;
+    }
+    25% {
+        opacity: .4;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: .4;
+    }
+
+}
+
 #grid {
     display: grid;
     grid-template-columns: repeat(10, var(--square-size));
     grid-template-rows: repeat(18, var(--square-size));
+    background: green;
 }
 
 .square {
@@ -21,3 +38,8 @@
 .freezePiece {
     background: red;
 }
+
+.delete {
+    animation: .4s linear 0s infinite alternate deleteLineAnimation;
+}
+

@@ -1,5 +1,5 @@
 const htmlGrid = document.getElementById('grid');
-export function buildGame({x, y}) {
+export function buildGame({ x, y }) {
   const game = [];
   for (let i = 0; i < y; i++) {
     game[i] = [];

@@ -1,10 +1,11 @@
 import { buildGame } from './js/init';
 import { calculateFps } from './js/utils';
 import { inputs } from './js/keyEvent';
-import { Square } from './tetraminos/square.js';
+import { Square } from './tetraminos/square';
+import { animateDeletedLine } from './js/animations';
 
-const SQUARE_STATES = ['empty', 'piece', 'freezePiece'];
-const GAME_SIZE = { x: 10, y: 18 }
+const SQUARE_STATES = ['empty', 'piece', 'freezePiece', 'delete'];
+const GAME_SIZE = { x: 10, y: 18 };
 let currentFrame = 0;
 const speed = 40;
 const speedLimit = 5;
@@ -14,7 +15,7 @@ let currentPiece = null;
 let game = buildGame(GAME_SIZE);
 
 window.requestAnimationFrame(gameLoop);
-function gameLoop(timeStamp) {
+async function gameLoop(timeStamp) {
   if (!currentPiece || !currentPiece.active) {
     currentPiece = addPiece();
   }
@@ -29,8 +30,8 @@ function gameLoop(timeStamp) {
 
   if (currentFrame % speed === 0) {
     const result = movePieceDown(currentPiece, game);
-    if(result === 'GAME_OVER') return console.log('GAME_OVER')
-    game = removeLine(game)
+    if (result === 'GAME_OVER') return console.log('GAME_OVER');
+    game = await removeLine(game);
   }
   window.requestAnimationFrame(gameLoop);
 }
@@ -50,7 +51,6 @@ function printGame(game) {
     }
   }
 }
-
 
 function printPiece(position) {
   position.forEach(({ x, y }) => {
@@ -77,14 +77,14 @@ function movePiece(piece, inputs) {
 
 function movePieceDown(piece, game) {
   if (canIMove(piece, 0, 1)) piece.down();
-  else return freezePiece(game, piece) ;
+  else return freezePiece(game, piece);
 }
 function canIMove(piece, dx, dy = 0) {
   let canMove = true;
   const position = piece.position.map(({ x, y }) => ({ x: x + dx, y: y + dy }));
   position.forEach(({ x, y }) => {
     if (y >= 0) {
-      if(isOutOfBand(x, y)) {
+      if (isOutOfBand(x, y)) {
         canMove = false;
       } else {
         const gp = game[y][x];
@@ -98,9 +98,9 @@ function canIMove(piece, dx, dy = 0) {
 }
 
 function freezePiece(game, piece) {
-  let gameState = 'ok'
-  for (const {x, y} of piece.position) {
-    if(y < 0) gameState = 'GAME_OVER'
+  let gameState = 'ok';
+  for (const { x, y } of piece.position) {
+    if (y < 0) gameState = 'GAME_OVER';
     else game[y][x] = 2;
   }
   piece.active = false;
@@ -108,18 +108,25 @@ function freezePiece(game, piece) {
 }
 
 function isOutOfBand(x, y) {
-  return x < 0 || x > GAME_SIZE.x || y > GAME_SIZE.y - 1
+  return x < 0 || x > GAME_SIZE.x || y > GAME_SIZE.y - 1;
 }
 
-function removeLine(game) {
-  game = game.filter(row => !row.every(c => c === 2));
-  const totalDeletedLines = GAME_SIZE.y - game.length;
+async function removeLine(game) {
+  const indexDeletedLine = [];
+  game = game.filter((row, index) => {
+    if (row.every(c => c === 2)) indexDeletedLine.push(index);
+    return !row.every(c => c === 2);
+  });
+  const totalDeletedLines = indexDeletedLine.length;
   for (let i = 0; i < totalDeletedLines; i++) {
     const newEmptyLine = [];
     for (let j = 0; j < GAME_SIZE.x; j++) {
       newEmptyLine[j] = 0;
     }
-    game.unshift(newEmptyLine)
+    game.unshift(newEmptyLine);
   }
-  return game
+  if (totalDeletedLines) {
+    await animateDeletedLine(indexDeletedLine, GAME_SIZE.x);
+  }
+  return game;
 }
