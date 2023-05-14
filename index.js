@@ -11,7 +11,7 @@ const speedLimit = 5;
 const PIECES = [Square];
 let currentPiece = null;
 
-const game = buildGame(GAME_SIZE);
+let game = buildGame(GAME_SIZE);
 
 window.requestAnimationFrame(gameLoop);
 function gameLoop(timeStamp) {
@@ -30,6 +30,7 @@ function gameLoop(timeStamp) {
   if (currentFrame % speed === 0) {
     const result = movePieceDown(currentPiece, game);
     if(result === 'GAME_OVER') return console.log('GAME_OVER')
+    game = removeLine(game)
   }
   window.requestAnimationFrame(gameLoop);
 }
@@ -108,4 +109,17 @@ function freezePiece(game, piece) {
 
 function isOutOfBand(x, y) {
   return x < 0 || x > GAME_SIZE.x || y > GAME_SIZE.y - 1
+}
+
+function removeLine(game) {
+  game = game.filter(row => !row.every(c => c === 2));
+  const totalDeletedLines = GAME_SIZE.y - game.length;
+  for (let i = 0; i < totalDeletedLines; i++) {
+    const newEmptyLine = [];
+    for (let j = 0; j < GAME_SIZE.x; j++) {
+      newEmptyLine[j] = 0;
+    }
+    game.unshift(newEmptyLine)
+  }
+  return game
 }
