@@ -1,7 +1,7 @@
 export const Square = class {
   constructor() {
     this.active = true;
-    this.y = 0;
+    this.y = -1;
     this.x = 4;
     this.shape = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -1 }, { x: 1, y: -1 }];
   }

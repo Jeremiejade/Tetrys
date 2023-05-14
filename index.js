@@ -19,7 +19,7 @@ function gameLoop(timeStamp) {
     currentPiece = addPiece();
   }
   currentFrame++;
-  if (printGame(game) !== 'OK') return;
+  printGame(game);
   printPiece(currentPiece.position);
 
   // console.log(calculateFps(timeStamp));
@@ -28,7 +28,8 @@ function gameLoop(timeStamp) {
   }
 
   if (currentFrame % speed === 0) {
-    movePieceDown(currentPiece, game)
+    const result = movePieceDown(currentPiece, game);
+    if(result === 'GAME_OVER') return console.log('GAME_OVER')
   }
   window.requestAnimationFrame(gameLoop);
 }
@@ -38,25 +39,21 @@ function addPiece() {
 }
 
 function printGame(game) {
-  for (const rowKey in game) {
-    const row = game[rowKey];
-    for (const colKey in row) {
-      const colValue = row[colKey];
-      const htmlsquare = document.querySelector(`.${rowKey}.${colKey}`);
-      if (!htmlsquare) {
-        console.log('no existing element');
-        return 'STOP';
-      }
+  for (let i = 0; i < game.length; i++) {
+    const row = game[i];
+    for (let j = 0; j < row.length; j++) {
+      const colValue = row[j];
+      const htmlsquare = document.querySelector(`.row_${i}.col_${j}`);
       SQUARE_STATES.forEach(state => htmlsquare.classList.remove(state));
       htmlsquare.classList.add(SQUARE_STATES[colValue]);
     }
   }
-  return 'OK';
 }
+
 
 function printPiece(position) {
   position.forEach(({ x, y }) => {
-    if (y >= 1) {
+    if (y >= 0) {
       const htmlsquare = document.querySelector(`.row_${y}.col_${x}`);
       SQUARE_STATES.forEach(state => htmlsquare.classList.remove(state));
       htmlsquare.classList.add(SQUARE_STATES[1]);
@@ -79,17 +76,17 @@ function movePiece(piece, inputs) {
 
 function movePieceDown(piece, game) {
   if (canIMove(piece, 0, 1)) piece.down();
-  else freezePiece(game, piece);
+  else return freezePiece(game, piece) ;
 }
 function canIMove(piece, dx, dy = 0) {
   let canMove = true;
   const position = piece.position.map(({ x, y }) => ({ x: x + dx, y: y + dy }));
   position.forEach(({ x, y }) => {
-    if (y >= 1) {
+    if (y >= 0) {
       if(isOutOfBand(x, y)) {
         canMove = false;
       } else {
-        const gp = game[`row_${y}`][`col_${x}`];
+        const gp = game[y][x];
         if (gp !== 0) {
           canMove = false;
         }
@@ -100,12 +97,15 @@ function canIMove(piece, dx, dy = 0) {
 }
 
 function freezePiece(game, piece) {
-  piece.position.forEach(({ x, y }) => {
-    game[`row_${y}`][`col_${x}`] = 2;
-  });
+  let gameState = 'ok'
+  for (const {x, y} of piece.position) {
+    if(y < 0) gameState = 'GAME_OVER'
+    else game[y][x] = 2;
+  }
   piece.active = false;
+  return gameState;
 }
 
 function isOutOfBand(x, y) {
-  return x < 0 || x > GAME_SIZE.x || y > GAME_SIZE.y
+  return x < 0 || x > GAME_SIZE.x || y > GAME_SIZE.y - 1
 }
