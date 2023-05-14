@@ -1,0 +1,23 @@
+:root {
+    --square-size: 20px;
+}
+
+#grid {
+    display: grid;
+    grid-template-columns: repeat(10, var(--square-size));
+    grid-template-rows: repeat(18, var(--square-size));
+}
+
+.square {
+    box-sizing: border-box;
+    background: #000;
+    border: solid 1px white;
+}
+
+.piece {
+    background: pink;
+}
+
+.freezePiece {
+    background: red;
+}
