@@ -1,5 +1,5 @@
 :root {
-    --square-size: 20px;
+    --square-size: 40px;
 }
 
 @keyframes deleteLineAnimation {

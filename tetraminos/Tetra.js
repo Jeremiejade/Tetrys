@@ -4,7 +4,7 @@ export const Tetra = class {
     this.y = 0;
     this.x = 4;
     this.shape = shape;
-    this.currentIndexShape = 0
+    this.currentIndexShape = 0;
   }
 
   get position() {
@@ -12,7 +12,25 @@ export const Tetra = class {
   }
 
   get currentShape() {
-    return this.shape[this.currentIndexShape]
+    return this.shape[this.currentIndexShape];
+  }
+
+  get nextShapePosition() {
+    return this.shape[this.nextIndexShape()]
+      .map(s => ({ x: this.x + s.x, y: this.y + s.y }));
+  }
+
+  get previousShapePosition() {
+    return this.shape[this.previousIndexShape()]
+      .map(s => ({ x: this.x + s.x, y: this.y + s.y }));
+  }
+
+  rotateToRight() {
+    this.currentIndexShape = this.nextIndexShape();
+  }
+
+  rotateToLeft() {
+    this.currentIndexShape = this.previousIndexShape();
   }
 
   left() {
@@ -25,6 +43,22 @@ export const Tetra = class {
 
   down() {
     this.y++;
+  }
+
+  nextIndexShape() {
+    if (this.currentIndexShape === this.shape.length - 1) {
+      return 0;
+    } else {
+      return this.currentIndexShape + 1;
+    }
+  }
+
+  previousIndexShape() {
+    if (this.currentIndexShape === 0) {
+      return this.shape.length - 1;
+    } else {
+      return this.currentIndexShape - 1;
+    }
   }
 
   freeze() {

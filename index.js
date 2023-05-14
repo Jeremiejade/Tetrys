@@ -37,7 +37,7 @@ async function gameLoop(timeStamp) {
 }
 
 function addPiece() {
-  const shapes = shuffle(tetraShape)
+  const shapes = shuffle(tetraShape);
   return new Tetra(shapes[0]);
 }
 
@@ -70,6 +70,13 @@ function movePiece(piece, inputs) {
   if (inputs.includes('RIGHT')) {
     if (canIMove(piece, 1)) piece.right();
   }
+  if (inputs.includes('TURN_LEFT')) {
+    if (canITurn(piece, 'LEFT')) piece.rotateToLeft();
+  }
+
+  if (inputs.includes('TURN_RIGHT')) {
+    if (canITurn(piece, 'RIGHT')) piece.rotateToRight();
+  }
 
   if (inputs.includes('DOWN')) {
     if (canIMove(piece, 0, 1)) piece.down();
@@ -81,8 +88,22 @@ function movePieceDown(piece, game) {
   else return freezePiece(game, piece);
 }
 function canIMove(piece, dx, dy = 0) {
-  let canMove = true;
   const position = piece.position.map(({ x, y }) => ({ x: x + dx, y: y + dy }));
+  return canIDo(position);
+}
+
+function canITurn(piece, direction) {
+  let position = null;
+  if (direction === 'LEFT') {
+    position = piece.previousShapePosition;
+  } else {
+    position = piece.nextShapePosition;
+  }
+  return canIDo(position);
+}
+
+function canIDo(position) {
+  let canMove = true;
   position.forEach(({ x, y }) => {
     if (y >= 0) {
       if (isOutOfBand(x, y)) {
