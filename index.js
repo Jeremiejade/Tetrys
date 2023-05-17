@@ -13,6 +13,7 @@ const speedLimit = 5;
 let currentPiece = null;
 
 let game = buildGame(GAME_SIZE);
+let nextPiece = shuffle(tetraShape);
 
 window.requestAnimationFrame(gameLoop);
 async function gameLoop(timeStamp) {
@@ -22,6 +23,7 @@ async function gameLoop(timeStamp) {
   currentFrame++;
   printGame(game);
   printPiece(currentPiece.position);
+  printPreview(nextPiece.name);
 
   turnInput.state = turnPiece(currentPiece, turnInput.state);
 
@@ -39,8 +41,9 @@ async function gameLoop(timeStamp) {
 }
 
 function addPiece() {
-  const shapes = shuffle(tetraShape);
-  return new Tetra(shapes[0]);
+  const newPiece = new Tetra(nextPiece.name, nextPiece.shapes);
+  nextPiece = shuffle(tetraShape);
+  return newPiece;
 }
 
 function printGame(game) {
@@ -63,6 +66,11 @@ function printPiece(position) {
       htmlsquare.classList.add(SQUARE_STATES[1]);
     }
   });
+}
+
+function printPreview(name) {
+  const htmlPreview = document.getElementById('preview');
+  htmlPreview.className = name;
 }
 
 function movePiece(piece, inputs) {

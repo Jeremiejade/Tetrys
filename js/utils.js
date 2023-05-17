@@ -22,5 +22,5 @@ export function shuffle(array) {
       array[randomIndex], array[currentIndex]];
   }
 
-  return array;
+  return array[0];
 }

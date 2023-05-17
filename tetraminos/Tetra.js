@@ -1,8 +1,9 @@
 export const Tetra = class {
-  constructor(shape) {
+  constructor(name, shape) {
     this.active = true;
     this.y = 0;
     this.x = 4;
+    this.name = name;
     this.shape = shape;
     this.currentIndexShape = 0;
   }

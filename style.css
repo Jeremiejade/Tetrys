@@ -18,11 +18,18 @@
 
 }
 
+#game {
+    display: flex;
+}
+
 #grid {
     display: grid;
+    width: calc(10 * var(--square-size));
+    height: calc(18 * var(--square-size));
     grid-template-columns: repeat(10, var(--square-size));
     grid-template-rows: repeat(18, var(--square-size));
     background: green;
+    border: gainsboro ridge 3px;
 }
 
 .square {
