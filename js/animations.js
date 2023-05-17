@@ -1,8 +1,8 @@
 export function animateDeletedLine(indexLines, gameSizeX) {
   for (const indexLine of indexLines) {
     for (let i = 0; i < gameSizeX; i++) {
-      const htmlsquare = document.querySelector(`.row_${indexLine}.col_${i}`);
-      htmlsquare.classList.add('delete');
+      const htmlSquare = document.querySelector(`.row_${indexLine}.col_${i}`);
+      htmlSquare.classList.add('delete');
     }
   }
   return sleep(800);

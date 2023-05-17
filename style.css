@@ -15,11 +15,30 @@
     100% {
         opacity: .4;
     }
-
 }
 
 #game {
     display: flex;
+}
+
+#level {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    margin-right: calc(var(--square-size)/2);
+    width: calc(3 * var(--square-size));
+    height: calc(5 * var(--square-size));
+    background: #000;
+    border: gainsboro ridge 3px;
+    color: aliceblue;
+    font-size: 1.2rem;
+    font-family: sans-serif;
+}
+
+#level p {
+    margin: 0;
+    text-align: center;
 }
 
 #grid {
@@ -29,7 +48,7 @@
     grid-template-columns: repeat(10, var(--square-size));
     grid-template-rows: repeat(18, var(--square-size));
     background: green;
-    border: gainsboro ridge 3px;
+    border: black ridge 10px;
 }
 
 .square {
@@ -40,10 +59,12 @@
 
 .piece {
     background: pink;
+    border: ridge 5px white;
 }
 
 .freezePiece {
     background: red;
+    border: ridge 5px white;
 }
 
 .delete {

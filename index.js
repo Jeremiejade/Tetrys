@@ -8,9 +8,15 @@ import { animateDeletedLine } from './js/animations';
 const SQUARE_STATES = ['empty', 'piece', 'freezePiece', 'delete'];
 const GAME_SIZE = { x: 10, y: 18 };
 let currentFrame = 0;
-const speed = 40;
 const speedLimit = 5;
 let currentPiece = null;
+const gameState = {
+  speed: 40,
+  level: 0,
+  score: 0,
+  time: 0,
+  nextLevelScore: 10000,
+};
 
 let game = buildGame(GAME_SIZE);
 let nextPiece = shuffle(tetraShape);
@@ -20,7 +26,9 @@ async function gameLoop(timeStamp) {
   if (!currentPiece || !currentPiece.active) {
     currentPiece = addPiece();
   }
+  gameState.time++;
   currentFrame++;
+  printLevel(gameState.level, gameState.time, gameState.score);
   printGame(game);
   printPiece(currentPiece.position);
   printPreview(nextPiece.name);
@@ -32,10 +40,10 @@ async function gameLoop(timeStamp) {
     movePiece(currentPiece, inputs);
   }
 
-  if (currentFrame % speed === 0) {
+  if (currentFrame % gameState.speed === 0) {
     const result = movePieceDown(currentPiece, game);
     if (result === 'GAME_OVER') return console.log('GAME_OVER');
-    game = await removeLine(game);
+    game = await removeLine(game, gameState);
   }
   window.requestAnimationFrame(gameLoop);
 }
@@ -51,9 +59,9 @@ function printGame(game) {
     const row = game[i];
     for (let j = 0; j < row.length; j++) {
       const colValue = row[j];
-      const htmlsquare = document.querySelector(`.row_${i}.col_${j}`);
-      SQUARE_STATES.forEach(state => htmlsquare.classList.remove(state));
-      htmlsquare.classList.add(SQUARE_STATES[colValue]);
+      const htmlSquare = document.querySelector(`.row_${i}.col_${j}`);
+      SQUARE_STATES.forEach(state => htmlSquare.classList.remove(state));
+      htmlSquare.classList.add(SQUARE_STATES[colValue]);
     }
   }
 }
@@ -61,9 +69,9 @@ function printGame(game) {
 function printPiece(position) {
   position.forEach(({ x, y }) => {
     if (y >= 0) {
-      const htmlsquare = document.querySelector(`.row_${y}.col_${x}`);
-      SQUARE_STATES.forEach(state => htmlsquare.classList.remove(state));
-      htmlsquare.classList.add(SQUARE_STATES[1]);
+      const htmlSquare = document.querySelector(`.row_${y}.col_${x}`);
+      SQUARE_STATES.forEach(state => htmlSquare.classList.remove(state));
+      htmlSquare.classList.add(SQUARE_STATES[1]);
     }
   });
 }
@@ -71,6 +79,11 @@ function printPiece(position) {
 function printPreview(name) {
   const htmlPreview = document.getElementById('preview');
   htmlPreview.className = name;
+}
+
+function printLevel(level, time, score) {
+  const htmlLevel = document.getElementById('level');
+  htmlLevel.innerHTML = `<p>Level ${level}</p><p>TIME: </br>${Math.round(time / 60)}s</p><p>SCORE: </br>${score}</p>`;
 }
 
 function movePiece(piece, inputs) {
@@ -167,6 +180,16 @@ async function removeLine(game) {
   }
   if (totalDeletedLines) {
     await animateDeletedLine(indexDeletedLine, GAME_SIZE.x);
+    gameState.score += totalDeletedLines * 100 * 2 ** totalDeletedLines;
+    if (gameState.score > gameState.nextLevelScore) await nextLevel(game);
   }
   return game;
+}
+
+async function nextLevel(game) {
+  gameState.level++;
+  gameState.nextLevelScore = 10000 * gameState.level * 2;
+  if (game.speed > speedLimit) {
+    gameState.speed -= 5;
+  }
 }
