@@ -1,6 +1,6 @@
 import { buildGame } from './js/init';
 import { calculateFps, shuffle } from './js/utils';
-import { inputs } from './js/keyEvent';
+import { inputs, turnInput } from './js/keyEvent';
 import { Tetra } from './tetraminos/Tetra';
 import { tetraShape } from './tetraminos/tetraShape';
 import { animateDeletedLine } from './js/animations';
@@ -22,6 +22,8 @@ async function gameLoop(timeStamp) {
   currentFrame++;
   printGame(game);
   printPiece(currentPiece.position);
+
+  turnInput.state = turnPiece(currentPiece, turnInput.state);
 
   // console.log(calculateFps(timeStamp));
   if (currentFrame % speedLimit === 0) {
@@ -70,17 +72,25 @@ function movePiece(piece, inputs) {
   if (inputs.includes('RIGHT')) {
     if (canIMove(piece, 1)) piece.right();
   }
-  if (inputs.includes('TURN_LEFT')) {
-    if (canITurn(piece, 'LEFT')) piece.rotateToLeft();
-  }
-
-  if (inputs.includes('TURN_RIGHT')) {
-    if (canITurn(piece, 'RIGHT')) piece.rotateToRight();
-  }
 
   if (inputs.includes('DOWN')) {
     if (canIMove(piece, 0, 1)) piece.down();
   }
+}
+
+function turnPiece(piece, input) {
+  if (input === 'TURN_LEFT') {
+    if (canITurn(piece, 'LEFT')) {
+      piece.rotateToLeft();
+    }
+  }
+
+  if (input === 'TURN_RIGHT') {
+    if (canITurn(piece, 'RIGHT')) {
+      piece.rotateToRight();
+    }
+  }
+  return null;
 }
 
 function movePieceDown(piece, game) {
