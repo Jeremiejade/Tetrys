@@ -4,24 +4,34 @@ import { inputs, turnInput } from './js/keyEvent';
 import { Tetra } from './tetraminos/Tetra';
 import { tetraShape } from './tetraminos/tetraShape';
 import { animateDeletedLine } from './js/animations';
+import { buildFirstMenu } from './js/menu';
 
 const SQUARE_STATES = ['empty', 'piece', 'freezePiece', 'delete'];
 const GAME_SIZE = { x: 10, y: 18 };
-let currentFrame = 0;
 const speedLimit = 5;
+let currentFrame = null;
 let currentPiece = null;
-const gameState = {
-  speed: 40,
-  level: 0,
-  score: 0,
-  time: 0,
-  nextLevelScore: 10000,
-};
+let game = null;
+let nextPiece = null;
+let gameState = null;
 
-let game = buildGame(GAME_SIZE);
-let nextPiece = shuffle(tetraShape);
+function launchNewGame() {
+  currentFrame = 0;
+  game = buildGame(GAME_SIZE);
+  nextPiece = shuffle(tetraShape);
+  currentPiece = null;
+  gameState = {
+    speed: 40,
+    level: 0,
+    score: 0,
+    time: 0,
+    nextLevelScore: 10000,
+  }
 
-window.requestAnimationFrame(gameLoop);
+  window.requestAnimationFrame(gameLoop);
+}
+
+buildFirstMenu(launchNewGame)
 async function gameLoop(timeStamp) {
   if (!currentPiece || !currentPiece.active) {
     currentPiece = addPiece();
@@ -42,7 +52,10 @@ async function gameLoop(timeStamp) {
 
   if (currentFrame % gameState.speed === 0) {
     const result = movePieceDown(currentPiece, game);
-    if (result === 'GAME_OVER') return console.log('GAME_OVER');
+    if (result === 'GAME_OVER') {
+      buildFirstMenu(launchNewGame, gameState)
+      return console.log('GAME_OVER');
+    }
     game = await removeLine(game, gameState);
   }
   window.requestAnimationFrame(gameLoop);

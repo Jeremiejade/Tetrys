@@ -1,0 +1,190 @@
+:root {
+    --square-size: 40px;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+
+}
+
+li {
+    list-style: none;
+}
+
+@keyframes deleteLineAnimation {
+    0% {
+        opacity: 1;
+    }
+    25% {
+        opacity: .4;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: .4;
+    }
+}
+
+#game {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+#level {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    margin-right: calc(var(--square-size)/2);
+    width: calc(3 * var(--square-size));
+    height: calc(5 * var(--square-size));
+    background: #000;
+    border: gainsboro ridge 3px;
+    color: aliceblue;
+    font-size: 1.2rem;
+}
+
+#level p {
+    margin: 0;
+    text-align: center;
+}
+
+#grid {
+    display: grid;
+    width: calc(10 * var(--square-size));
+    height: calc(18 * var(--square-size));
+    grid-template-columns: repeat(10, var(--square-size));
+    grid-template-rows: repeat(18, var(--square-size));
+    background: green;
+    border: black ridge 10px;
+}
+
+.square {
+    box-sizing: border-box;
+    background: #000;
+    border: solid 1px white;
+}
+
+.piece {
+    background: pink;
+    border: ridge 5px white;
+}
+
+.freezePiece {
+    background: red;
+    border: ridge 5px white;
+}
+
+.delete {
+    animation: .4s linear 0s infinite alternate deleteLineAnimation;
+}
+
+#menu {
+    color: #fff;
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    transform: translateX(-50%);
+    width: 600px;
+    border: ridge 5px white;
+    padding: 2rem;
+    background: #000;
+    z-index: 2;
+    display: none;
+    text-align: center;
+
+    &.display {
+        display: block;
+        & + #overlay {
+            display: block;
+        }
+    }
+
+    li {
+        display: flex;
+
+    }
+
+
+
+    #new-game, #option, #valid-control {
+        color: #000;
+        border: none;
+        background: none;
+        margin: 10px auto;
+        font-size: 4rem;
+        text-shadow:
+                0 0 7px #fff,
+                0 0 42px rgb(230, 18, 124);
+
+        &:hover {
+            cursor: pointer;
+            color: #fff;
+            text-shadow:
+                    0 0 7px #fff,
+                    0 0 10px #fff,
+                    0 0 42px rgb(230, 18, 124),
+                    0 0 77px rgb(230, 18, 124),
+                    0 0 100px rgb(230, 18, 124);
+            animation: lumiere 1s infinite linear;
+        ;
+        }
+    }
+
+        .key-input {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 50%;
+            margin: 0 auto;
+            cursor: pointer;
+            border-bottom: white solid 1px;
+
+            &.edition p:last-child {
+                box-shadow:
+                        0 0 7px #fff,
+                        0 0 10px #fff,
+                        0 0 42px rgb(230, 18, 124),
+                        0 0 77px rgb(230, 18, 124),
+                        0 0 100px rgb(230, 18, 124);
+            }
+            p {
+                padding: .4rem;
+            }
+        }
+}
+
+#overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, .8);
+}
+
+
+
+@keyframes lumiere {
+    0%{
+        text-shadow:
+                0 0 7px #fff,
+                0 0 10px #fff,
+                0 0 42px rgb(230, 18, 124),
+                0 0 77px rgb(230, 18, 124),
+                0 0 100px rgb(230, 18, 124);
+    }
+    50%{
+        text-shadow:
+                0 0 7px #fff,
+                0 0 10px #fff,
+                0 0 32px rgb(230, 18, 124),
+                0 0 87px rgb(230, 18, 124),
+                0 0 120px rgb(230, 18, 124);
+    }
+}

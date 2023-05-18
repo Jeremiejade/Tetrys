@@ -1,10 +1,10 @@
-const KEYS = {
+export const KEYS = {
   's': 'DOWN',
   q: 'LEFT',
   d: 'RIGHT',
 };
 
-const TURN_KEYS = {
+export const TURN_KEYS = {
   ' ': 'TURN_LEFT',
   e: 'TURN_RIGHT',
 };
