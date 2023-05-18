@@ -50,7 +50,15 @@ async function gameLoop(timeStamp) {
 
 function addPiece() {
   const newPiece = new Tetra(nextPiece.name, nextPiece.shapes);
-  nextPiece = shuffle(tetraShape);
+  nextPiece = getNewPiece(nextPiece);
+  return newPiece;
+}
+
+function getNewPiece(oldPiece) {
+  let newPiece = shuffle(tetraShape);
+  if(newPiece.name === oldPiece.name) {
+    newPiece = getNewPiece(oldPiece);
+  }
   return newPiece;
 }
 

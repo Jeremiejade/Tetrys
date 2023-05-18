@@ -1,11 +1,11 @@
 const KEYS = {
-  ' ': 'DOWN',
+  's': 'DOWN',
   q: 'LEFT',
   d: 'RIGHT',
 };
 
 const TURN_KEYS = {
-  a: 'TURN_LEFT',
+  ' ': 'TURN_LEFT',
   e: 'TURN_RIGHT',
 };
 
