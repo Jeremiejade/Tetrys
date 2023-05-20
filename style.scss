@@ -1,11 +1,19 @@
 :root {
     --square-size: 40px;
+    --bg-color: #123;
 }
+
+@font-face {
+    font-family: brunoAce;
+    src: url('./public/BrunoAceSC-Regular.ttf');
+}
+
 
 body {
     margin: 0;
     padding: 0;
     font-family: sans-serif;
+    background: var(--bg-color);
 
 }
 
@@ -32,6 +40,7 @@ li {
     position: relative;
     display: flex;
     justify-content: center;
+    padding-top: 60px
 }
 
 #level {
@@ -53,14 +62,55 @@ li {
     text-align: center;
 }
 
+h1 {
+    display: flex;
+    position: relative;
+    font-family: brunoAce,Poppins, sans-serif;
+    background-clip: text;
+    background-image: linear-gradient(to right, #09f1b8, #00a2ff, #ff00d2, #fed90f, #fed90f);
+    color: black;
+    font-size: 6em;
+    letter-spacing: calc(1em / 8);
+    -webkit-text-stroke-color: transparent;
+    -webkit-text-stroke-width: calc(1em / 16);
+    padding: 0 .5em;
+    margin: 0;
+}
+
+#tetrys {
+    position: relative;
+    border: black ridge 10px;
+    width: calc(10 * var(--square-size));
+
+    h1 {
+        position: absolute;
+        width: calc(10 * var(--square-size));
+        height: calc(2 * var(--square-size));
+        font-size: 4.5em;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+        z-index: 2;
+    }
+
+    &:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        background: #000;
+        width: calc(10 * var(--square-size));
+        height: calc(2 * var(--square-size));
+    }
+}
+
 #grid {
     display: grid;
     width: calc(10 * var(--square-size));
-    height: calc(18 * var(--square-size));
+    height: calc(20 * var(--square-size));
     grid-template-columns: repeat(10, var(--square-size));
-    grid-template-rows: repeat(18, var(--square-size));
-    background: green;
-    border: black ridge 10px;
+    grid-template-rows: repeat(20, var(--square-size));
 }
 
 .square {
@@ -72,11 +122,71 @@ li {
 .piece {
     background: pink;
     border: ridge 5px white;
+
+    &.sq {
+        background: #09f1b8;
+    }
+
+    &.s {
+        background: #00a2ff;
+    }
+
+    &.z {
+        background: #ff00d2;
+    }
+
+    &.l {
+        background: #fed90f;
+    }
+
+    &.lr {
+        background: #0f13fe;
+
+    }
+
+    &.t {
+        background: #fe630f;
+    }
+
+    &.b {
+        background: #670ffe;
+    }
 }
 
 .freezePiece {
-    background: red;
     border: ridge 5px white;
+    background-image: radial-gradient(circle, rgb(0, 0, 0) 20%, transparent 10%);
+    background-size: .3em .3em;
+    background-position: 0 0, .1em .1em;
+
+    &.sq {
+        background-color: #09f1b8;
+    }
+
+    &.s {
+        background-color: #00a2ff;
+    }
+
+    &.z {
+        background-color: #ff00d2;
+    }
+
+    &.l {
+        background-color: #fed90f;
+    }
+
+    &.lr {
+        background-color: #0f13fe;
+
+    }
+
+    &.t {
+        background-color: #fe630f;
+    }
+
+    &.b {
+        background-color: #670ffe;
+    }
 }
 
 .delete {
@@ -87,8 +197,8 @@ li {
     color: #fff;
     position: absolute;
     left: 50%;
-    top: 10%;
-    transform: translateX(-50%);
+    top: 50%;
+    transform: translate(-50%, -50%);
     width: 600px;
     border: ridge 5px white;
     padding: 2rem;
@@ -96,6 +206,7 @@ li {
     z-index: 2;
     display: none;
     text-align: center;
+
 
     &.display {
         display: block;

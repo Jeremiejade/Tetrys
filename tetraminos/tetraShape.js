@@ -54,3 +54,5 @@ export const tetraShape = [
     ]
   }
 ];
+
+export const namesShape = tetraShape.map(s => s.name);

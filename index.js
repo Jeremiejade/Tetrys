@@ -2,12 +2,12 @@ import { buildGame } from './js/init';
 import { calculateFps, shuffle } from './js/utils';
 import { inputs, turnInput } from './js/keyEvent';
 import { Tetra } from './tetraminos/Tetra';
-import { tetraShape } from './tetraminos/tetraShape';
+import { namesShape, tetraShape } from './tetraminos/tetraShape';
 import { animateDeletedLine } from './js/animations';
 import { buildFirstMenu } from './js/menu';
 
 const SQUARE_STATES = ['empty', 'piece', 'freezePiece', 'delete'];
-const GAME_SIZE = { x: 10, y: 18 };
+const GAME_SIZE = { x: 10, y: 20 };
 const speedLimit = 5;
 let currentFrame = null;
 let currentPiece = null;
@@ -26,12 +26,12 @@ function launchNewGame() {
     score: 0,
     time: 0,
     nextLevelScore: 10000,
-  }
+  };
 
   window.requestAnimationFrame(gameLoop);
 }
 
-buildFirstMenu(launchNewGame)
+buildFirstMenu(launchNewGame);
 async function gameLoop(timeStamp) {
   if (!currentPiece || !currentPiece.active) {
     currentPiece = addPiece();
@@ -40,12 +40,12 @@ async function gameLoop(timeStamp) {
   currentFrame++;
   printLevel(gameState.level, gameState.time, gameState.score);
   printGame(game);
-  printPiece(currentPiece.position);
+  printPiece(currentPiece.position, currentPiece.name);
   printPreview(nextPiece.name);
 
   turnInput.state = turnPiece(currentPiece, turnInput.state);
 
-  // console.log(calculateFps(timeStamp));
+  console.log(calculateFps(timeStamp));
   if (currentFrame % speedLimit === 0) {
     movePiece(currentPiece, inputs);
   }
@@ -53,7 +53,7 @@ async function gameLoop(timeStamp) {
   if (currentFrame % gameState.speed === 0) {
     const result = movePieceDown(currentPiece, game);
     if (result === 'GAME_OVER') {
-      buildFirstMenu(launchNewGame, gameState)
+      buildFirstMenu(launchNewGame, gameState);
       return console.log('GAME_OVER');
     }
     game = await removeLine(game, gameState);
@@ -69,7 +69,7 @@ function addPiece() {
 
 function getNewPiece(oldPiece) {
   let newPiece = shuffle(tetraShape);
-  if(newPiece.name === oldPiece.name) {
+  if (newPiece.name === oldPiece.name) {
     newPiece = getNewPiece(oldPiece);
   }
   return newPiece;
@@ -81,18 +81,20 @@ function printGame(game) {
     for (let j = 0; j < row.length; j++) {
       const colValue = row[j];
       const htmlSquare = document.querySelector(`.row_${i}.col_${j}`);
-      SQUARE_STATES.forEach(state => htmlSquare.classList.remove(state));
-      htmlSquare.classList.add(SQUARE_STATES[colValue]);
+      htmlSquare.classList.remove(...SQUARE_STATES);
+      htmlSquare.classList.remove(...namesShape);
+      htmlSquare.classList.add(...colValue.split(','));
     }
   }
 }
 
-function printPiece(position) {
+function printPiece(position, name) {
   position.forEach(({ x, y }) => {
     if (y >= 0) {
       const htmlSquare = document.querySelector(`.row_${y}.col_${x}`);
-      SQUARE_STATES.forEach(state => htmlSquare.classList.remove(state));
+      htmlSquare.classList.remove(...SQUARE_STATES);
       htmlSquare.classList.add(SQUARE_STATES[1]);
+      nameHTMLPiece(htmlSquare, name);
     }
   });
 }
@@ -105,6 +107,11 @@ function printPreview(name) {
 function printLevel(level, time, score) {
   const htmlLevel = document.getElementById('level');
   htmlLevel.innerHTML = `<p>Level ${level}</p><p>TIME: </br>${Math.round(time / 60)}s</p><p>SCORE: </br>${score}</p>`;
+}
+
+function nameHTMLPiece(piece, name) {
+  piece.classList.remove(...namesShape);
+  piece.classList.add(name);
 }
 
 function movePiece(piece, inputs) {
@@ -162,7 +169,7 @@ function canIDo(position) {
         canMove = false;
       } else {
         const gp = game[y][x];
-        if (gp !== 0) {
+        if (gp !== 'empty') {
           canMove = false;
         }
       }
@@ -175,7 +182,7 @@ function freezePiece(game, piece) {
   let gameState = 'ok';
   for (const { x, y } of piece.position) {
     if (y < 0) gameState = 'GAME_OVER';
-    else game[y][x] = 2;
+    else game[y][x] = `freezePiece,${piece.name}`;
   }
   piece.freeze();
   return gameState;
@@ -188,14 +195,14 @@ function isOutOfBand(x, y) {
 async function removeLine(game) {
   const indexDeletedLine = [];
   game = game.filter((row, index) => {
-    if (row.every(c => c === 2)) indexDeletedLine.push(index);
-    return !row.every(c => c === 2);
+    if (row.every(c => c.includes('freezePiece'))) indexDeletedLine.push(index);
+    return !row.every(c => c.includes('freezePiece'));
   });
   const totalDeletedLines = indexDeletedLine.length;
   for (let i = 0; i < totalDeletedLines; i++) {
     const newEmptyLine = [];
     for (let j = 0; j < GAME_SIZE.x; j++) {
-      newEmptyLine[j] = 0;
+      newEmptyLine[j] = 'empty';
     }
     game.unshift(newEmptyLine);
   }
@@ -209,7 +216,7 @@ async function removeLine(game) {
 
 async function nextLevel(game) {
   gameState.level++;
-  gameState.nextLevelScore = 10000 * gameState.level * 2;
+  gameState.nextLevelScore += 10000 * gameState.level * 2;
   if (game.speed > speedLimit) {
     gameState.speed -= 5;
   }

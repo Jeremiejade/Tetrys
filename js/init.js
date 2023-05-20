@@ -1,10 +1,11 @@
 const htmlGrid = document.getElementById('grid');
 export function buildGame({ x, y }) {
   const game = [];
+  htmlGrid.innerHTML = '';
   for (let i = 0; i < y; i++) {
     game[i] = [];
     for (let j = 0; j < x; j++) {
-      game[i][j] = 0;
+      game[i][j] = 'empty';
       buildSquare(`col_${j}`, `row_${i}`);
     }
   }

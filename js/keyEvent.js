@@ -1,5 +1,5 @@
 export const KEYS = {
-  's': 'DOWN',
+  s: 'DOWN',
   q: 'LEFT',
   d: 'RIGHT',
 };
