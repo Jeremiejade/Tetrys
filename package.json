@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint --report-unused-disable-directives ."
+    "lint": "eslint --report-unused-disable-directives .",
+    "deploy": "npm run build && git add dist -f && git commit -m \"deploy\" &&  git subtree push --prefix dist origin gh-pages"
   },
   "devDependencies": {
     "eslint": "^8.34.0",
@@ -18,6 +19,7 @@
     "vite": "^4.3.5"
   },
   "dependencies": {
+    "gh-pages": "^5.0.0",
     "sass": "^1.62.1"
   }
 }
