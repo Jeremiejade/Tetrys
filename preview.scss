@@ -8,6 +8,36 @@
   height: calc(3 * var(--square-size));
   background: #000;
   border: gainsboro ridge 3px;
+
+  &.sq .pixel {
+    background: #09f1b8;
+  }
+
+  &.s .pixel {
+    background: #00a2ff;
+  }
+
+  &.z .pixel {
+    background: #ff00d2;
+  }
+
+  &.l .pixel {
+    background: #fed90f;
+  }
+
+  &.lr .pixel {
+    background: #0f13fe;
+
+  }
+
+  &.t .pixel {
+    background: #fe630f;
+  }
+
+  &.b .pixel {
+    background: #670ffe;
+  }
+
 }
 
 #preview.b {
