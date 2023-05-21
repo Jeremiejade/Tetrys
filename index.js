@@ -235,15 +235,15 @@ async function removeLine(game) {
     await animateDeletedLine(indexDeletedLine, GAME_SIZE.x);
     gameState.score += totalDeletedLines * 100 * 2 ** totalDeletedLines;
     gameState.totalLine += totalDeletedLines;
-    if (gameState.totalLine > gameState.nextLevelLine) await nextLevel(game);
+    if (gameState.totalLine > gameState.nextLevelLine) await nextLevel();
   }
   return game;
 }
 
-async function nextLevel(game) {
+async function nextLevel() {
   gameState.level++;
   gameState.nextLevelLine += NEXT_LEVEL_LINE_LIMIT;
-  if (game.speed > speedLimit) {
+  if (gameState.speed > speedLimit) {
     gameState.speed -= 5;
   }
 }
