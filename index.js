@@ -14,6 +14,10 @@ let currentPiece = null;
 let game = null;
 let nextPiece = null;
 let gameState = null;
+const toFreezePiece = {
+  state: false,
+  time: 0
+}
 
 function launchNewGame() {
   currentFrame = 0;
@@ -46,12 +50,17 @@ async function gameLoop(timeStamp) {
   turnInput.state = turnPiece(currentPiece, turnInput.state);
 
   console.log(calculateFps(timeStamp));
+
   if (currentFrame % speedLimit === 0) {
-    movePiece(currentPiece, inputs);
+    movePiece(currentPiece, inputs, currentFrame);
   }
 
   if (currentFrame % gameState.speed === 0) {
-    const result = movePieceDown(currentPiece, game);
+     movePieceDown(currentPiece, currentFrame);
+  }
+
+  if(!canIMove(currentPiece, 0, 1) && toFreezePiece.state && (currentFrame - toFreezePiece.time + 1) % gameState.speed === 0) {
+    const result = freezePiece(game, currentPiece);
     if (result === 'GAME_OVER') {
       buildFirstMenu(launchNewGame, gameState);
       return console.log('GAME_OVER');
@@ -114,7 +123,7 @@ function nameHTMLPiece(piece, name) {
   piece.classList.add(name);
 }
 
-function movePiece(piece, inputs) {
+function movePiece(piece, inputs, currentFrame) {
   if (inputs.includes('LEFT')) {
     if (canIMove(piece, -1)) piece.left();
   }
@@ -123,7 +132,7 @@ function movePiece(piece, inputs) {
   }
 
   if (inputs.includes('DOWN')) {
-    if (canIMove(piece, 0, 1)) piece.down();
+    movePieceDown(currentPiece, currentFrame);
   }
 }
 
@@ -142,9 +151,14 @@ function turnPiece(piece, input) {
   return null;
 }
 
-function movePieceDown(piece, game) {
-  if (canIMove(piece, 0, 1)) piece.down();
-  else return freezePiece(game, piece);
+function movePieceDown(piece, time) {
+  if (canIMove(piece, 0, 1)) {
+    piece.down();
+    toFreezePiece.state = false;
+  } else if (!toFreezePiece.state) {
+    toFreezePiece.state = true;
+    toFreezePiece.time = time;
+  }
 }
 function canIMove(piece, dx, dy = 0) {
   const position = piece.position.map(({ x, y }) => ({ x: x + dx, y: y + dy }));
@@ -179,12 +193,14 @@ function canIDo(position) {
 }
 
 function freezePiece(game, piece) {
+  debugger
   let gameState = 'ok';
   for (const { x, y } of piece.position) {
     if (y < 0) gameState = 'GAME_OVER';
     else game[y][x] = `freezePiece,${piece.name}`;
   }
   piece.freeze();
+  toFreezePiece.state = false;
   return gameState;
 }
 
