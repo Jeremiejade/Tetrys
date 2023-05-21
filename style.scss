@@ -67,6 +67,7 @@ h1 {
     position: relative;
     font-family: brunoAce,Poppins, sans-serif;
     background-clip: text;
+    -webkit-background-clip: text;
     background-image: linear-gradient(to right, #09f1b8, #00a2ff, #ff00d2, #fed90f, #fed90f);
     color: black;
     font-size: 6em;
