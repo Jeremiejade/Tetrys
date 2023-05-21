@@ -1,13 +1,14 @@
 import { buildGame } from './js/init';
 import { calculateFps, shuffle } from './js/utils';
-import { inputs, turnInput } from './js/keyEvent';
+import { inputs, pauseInput, turnInput, resetInput } from './js/keyEvent';
 import { Tetra } from './tetraminos/Tetra';
 import { namesShape, tetraShape } from './tetraminos/tetraShape';
 import { animateDeletedLine } from './js/animations';
-import { buildFirstMenu } from './js/menu';
+import { buildFirstMenu, buildPause } from './js/menu';
 
 const SQUARE_STATES = ['empty', 'piece', 'freezePiece', 'delete'];
 const GAME_SIZE = { x: 10, y: 20 };
+const NEXT_LEVEL_LINE_LIMIT = 10;
 const speedLimit = 5;
 let currentFrame = null;
 let currentPiece = null;
@@ -17,7 +18,7 @@ let gameState = null;
 const toFreezePiece = {
   state: false,
   time: 0
-}
+};
 
 function launchNewGame() {
   currentFrame = 0;
@@ -29,9 +30,10 @@ function launchNewGame() {
     level: 0,
     score: 0,
     time: 0,
-    nextLevelScore: 10000,
+    totalLine: 0,
+    nextLevelLine: 10,
   };
-
+  resetInput();
   window.requestAnimationFrame(gameLoop);
 }
 
@@ -56,16 +58,24 @@ async function gameLoop(timeStamp) {
   }
 
   if (currentFrame % gameState.speed === 0) {
-     movePieceDown(currentPiece, currentFrame);
+    movePieceDown(currentPiece, currentFrame);
   }
 
-  if(!canIMove(currentPiece, 0, 1) && toFreezePiece.state && (currentFrame - toFreezePiece.time + 1) % gameState.speed === 0) {
+  if (!canIMove(currentPiece, 0, 1) && toFreezePiece.state && (currentFrame - toFreezePiece.time + 1) % gameState.speed === 0) {
     const result = freezePiece(game, currentPiece);
     if (result === 'GAME_OVER') {
       buildFirstMenu(launchNewGame, gameState);
       return console.log('GAME_OVER');
     }
     game = await removeLine(game, gameState);
+  }
+  if (pauseInput.state) {
+    pauseInput.state = null;
+    const resultPause = await buildPause();
+    if (resultPause === 'restart') {
+      launchNewGame();
+      return;
+    }
   }
   window.requestAnimationFrame(gameLoop);
 }
@@ -193,7 +203,6 @@ function canIDo(position) {
 }
 
 function freezePiece(game, piece) {
-  debugger
   let gameState = 'ok';
   for (const { x, y } of piece.position) {
     if (y < 0) gameState = 'GAME_OVER';
@@ -225,14 +234,15 @@ async function removeLine(game) {
   if (totalDeletedLines) {
     await animateDeletedLine(indexDeletedLine, GAME_SIZE.x);
     gameState.score += totalDeletedLines * 100 * 2 ** totalDeletedLines;
-    if (gameState.score > gameState.nextLevelScore) await nextLevel(game);
+    gameState.totalLine += totalDeletedLines;
+    if (gameState.totalLine > gameState.nextLevelLine) await nextLevel(game);
   }
   return game;
 }
 
 async function nextLevel(game) {
   gameState.level++;
-  gameState.nextLevelScore += 10000 * gameState.level * 2;
+  gameState.nextLevelLine += NEXT_LEVEL_LINE_LIMIT;
   if (game.speed > speedLimit) {
     gameState.speed -= 5;
   }

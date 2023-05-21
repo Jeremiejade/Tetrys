@@ -1,6 +1,7 @@
-import { KEYS, TURN_KEYS } from './keyEvent.js';
+import { KEYS, PAUSE_KEYS, TURN_KEYS } from './keyEvent.js';
 
 const turnKeysName = Object.values(TURN_KEYS);
+const keysName = Object.values(KEYS);
 
 export function buildFirstMenu(launchGame, state) {
   const menu = document.getElementById('menu');
@@ -42,6 +43,43 @@ export function buildFirstMenu(launchGame, state) {
   });
 }
 
+export function buildPause() {
+  let resolvePromise = null;
+  const menu = document.getElementById('menu');
+  menu.classList.add('display');
+  menu.innerHTML = `  <h1>
+    <span class="t">T</span>
+    <span class="e">e</span>
+    <span class="tt">t</span>
+    <span class="r">r</span>
+    <span class="y">y</span>
+    <span class="s">s</span>
+  </h1>
+    <h2>PAUSE</h2>`;
+
+  const resumeButton = document.createElement('button');
+  resumeButton.id = 'valid-control';
+  resumeButton.innerText = 'Resume game';
+  resumeButton.addEventListener('click', () => {
+    menu.classList.remove('display');
+    resolvePromise();
+  });
+  menu.appendChild(resumeButton);
+
+  const restartButton = document.createElement('button');
+  restartButton.id = 'valid-control';
+  restartButton.innerText = 'Restart';
+  restartButton.addEventListener('click', () => {
+    menu.classList.remove('display');
+    resolvePromise('restart');
+  });
+  menu.appendChild(restartButton);
+
+  return new Promise(resolve => {
+    resolvePromise = resolve;
+  });
+}
+
 function buildOptions(menu, gameState, state) {
   menu.innerHTML = `
   <h1>
@@ -62,6 +100,11 @@ function buildOptions(menu, gameState, state) {
     menu.appendChild(buildKeyInput(TURN_KEYS[k], k, menu));
     delete TURN_KEYS[k];
   }
+  for (const k in PAUSE_KEYS) {
+    menu.appendChild(buildKeyInput(PAUSE_KEYS[k], k, menu));
+    delete PAUSE_KEYS[k];
+  }
+
   const button = document.createElement('button');
   button.innerText = 'Ok';
   button.id = 'valid-control';
@@ -73,8 +116,10 @@ function buildOptions(menu, gameState, state) {
       const key = input.dataset.key;
       if (turnKeysName.includes(name)) {
         TURN_KEYS[key] = name;
-      } else {
+      } else if (keysName.includes(name)) {
         KEYS[key] = name;
+      } else {
+        PAUSE_KEYS[key] = name;
       }
     });
     buildFirstMenu(gameState, state);
@@ -93,7 +138,9 @@ function buildKeyInput(name, currentKey, menu) {
   div.addEventListener('click', () => {
     edition = updateEdition(div, true);
   });
-  div.addEventListener('focusout', () => edition = updateEdition(div, false));
+  div.addEventListener('focusout', () => {
+    edition = updateEdition(div, false);
+  });
   window.addEventListener('keydown', ({ key }) => {
     if (edition) {
       const inputsHtml = menu.querySelectorAll('.key-input');
