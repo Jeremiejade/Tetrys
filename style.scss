@@ -218,12 +218,16 @@ h1 {
 
     li {
         display: flex;
-
     }
 
-
-
-    #new-game, #option, #valid-control {
+    #new-game,
+    #option,
+    #resume,
+    #valid-control,
+    #key-binding,
+    #keyboard-button,
+    #gamepad-button
+    {
         color: #000;
         border: none;
         background: none;
@@ -243,31 +247,69 @@ h1 {
                     0 0 77px rgb(230, 18, 124),
                     0 0 100px rgb(230, 18, 124);
             animation: lumiere 1s infinite linear;
-        ;
         }
     }
 
-        .key-input {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 50%;
-            margin: 0 auto;
-            cursor: pointer;
-            border-bottom: white solid 1px;
+    .key-input, .gamepad-key {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 50%;
+        margin: 0 auto;
+        border-bottom: white solid 1px;
 
-            &.edition p:last-child {
-                box-shadow:
-                        0 0 7px #fff,
-                        0 0 10px #fff,
-                        0 0 42px rgb(230, 18, 124),
-                        0 0 77px rgb(230, 18, 124),
-                        0 0 100px rgb(230, 18, 124);
-            }
-            p {
-                padding: .4rem;
+        p {
+            padding: .4rem;
+        }
+    }
+
+    .key-input {
+        cursor: pointer;
+
+        &.edition p:last-child {
+            box-shadow:
+                    0 0 7px #fff,
+                    0 0 10px #fff,
+                    0 0 42px rgb(230, 18, 124),
+                    0 0 77px rgb(230, 18, 124),
+                    0 0 100px rgb(230, 18, 124);
+        }
+    }
+
+    nav {
+        display: flex;
+        justify-content: center;
+        #keyboard-button,
+        #gamepad-button {
+            margin: 12px;
+            font-size: 2rem;
+            text-shadow:
+                    0 0 3px #fff,
+                    0 0 21px rgb(230, 18, 124);
+            &:hover {
+                cursor: pointer;
+                color: #fff;
+                text-shadow:
+                        0 0 3px #fff,
+                        0 0 5px #fff,
+                        0 0 12px rgb(230, 18, 124),
+                        0 0 35px rgb(230, 18, 124),
+                        0 0 50px rgb(230, 18, 124);
+                animation: lumiere 1s infinite linear;
             }
         }
+        p {
+            margin: 12px;
+            color: #000;
+            border: none;
+            text-decoration: underline;
+            background: none;
+            font-size: 2rem;
+            text-shadow:
+                    0 0 3px #fff,
+                    0 0 21px rgb(230, 18, 124);
+        }
+    }
 }
 
 #overlay {
